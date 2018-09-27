@@ -1,0 +1,13 @@
+extends layout.pug
+
+block content
+    div
+        h1= post.title
+        h3  
+            span= post.timestamp
+            span 发帖人： #{post.id}
+        p= post.content
+
+    hr
+        
+            

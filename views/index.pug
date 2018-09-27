@@ -1,0 +1,8 @@
+extends layout.pug
+
+block content
+    each post in posts
+        li
+            h3
+                a(target='blank' href='/post/' + post.id)= post.title
+                //- div= post.content
