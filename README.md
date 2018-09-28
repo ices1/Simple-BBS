@@ -1,11 +1,12 @@
 # Simple-BBS
 
 ### Install 
-```node
+```javascript
     npm install --save
 ```
 
 ### Run
-```js
+```javascript
     node app.js
 ```
+
