@@ -1,0 +1,10 @@
+extends layout.pug
+
+block content
+    div
+        p=user.name
+    h2 他发过的帖子
+    div
+        ul
+            each post in posts
+                a(href="/post/" + post.id)=post.content

@@ -4,5 +4,5 @@ block content
     each post in posts
         li
             h3
-                a(target='blank' href='/post/' + post.id)= post.title
-                //- div= post.content
+                a( href='/post/' + post.id)= post.title
+            span 发帖人id： #{post.userid}

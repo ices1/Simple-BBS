@@ -3,11 +3,23 @@ extends layout.pug
 block content
     div
         h1= post.title
-        h3  
+        p  
             span= post.timestamp
-            span 发帖人： #{post.id}
+            span 发帖人：
+                a(href='/user/' + post.userid)= post.userid
         p= post.content
 
     hr
-        
-            
+    ul
+        each c in comment
+            li
+                div
+                    span 回帖人： #{c.userid}
+                    p 回帖内容： #{c.content}
+                    span 回帖时间： #{c.timestamp}
+    div
+        form(action='/add-comment' method='post')
+            input(hidden=true name='postid' value=post.id)
+            textarea(name="content", placeholder='请输入评论')
+            br
+            button 提交
