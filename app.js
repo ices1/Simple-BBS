@@ -126,18 +126,31 @@ app.get('/user/:userid', (req, res, next) => {
   })
 })
 
+// 注册
+app.route('/register')
+  .get((req, res, next) => {
+    res.sendfile(path.join(__dirname, './static/register.html'))
+  })
+  .post((req, res, next) => {
+    console.log(req.body)
+    if (users.find(it => it.name == req.body.username)) {
+      res.status(406).send('该用户已被注册')
+    } else {
+      users.push({
+        id: users[users.length - 1].id + 1,
+        name: req.body.username,
+        password: req.body.password 
+      })
+      res.redirect('/login')
+    }
+  })
 
+  // 登录
+  app.route('/login')
+    .get((req, res, next) => {
+      res.render('login.pug')
+    })
+    .post((req, res, next) => {
+      res.redirect('/')
+    })
 
-
-
-// debugger
-/* 
-Error 1. 
-  Cannot find module 'pug' at...
-
-  solution： 
-  根据 package.json 重装 express jade pug
-  npm install --save express jade pug
-
-
-*/
