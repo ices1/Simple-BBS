@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content
+    div 
+        form(action="/register", method="post" enctype='multipart/form-data')
+            input(type="text" name='username')
+            input(type="password" name='password')
+            input(type="file", name="avatar")
+            button 提交

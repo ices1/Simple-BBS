@@ -4,7 +4,9 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const sqlite = require('sqlite')
 const cookieParser = require('cookie-parser')
+const multer = require('multer')
 const dbPromise = sqlite.open('./bbs.db', { Promise });
+const upload = multer({dest: path.join(__dirname, 'user-uploaded')})
 const port = 3002
 const app = express()
 let db
@@ -17,28 +19,27 @@ app.locals.pretty = true
 // 默认打开 static 下的 index.html
 // 相对 http://localhost/static 
 app.use('/static', express.static('./static'))
+app.use('/avatars', express.static('./user-uploaded'))
 app.use(cookieParser('sdfghyhbvbnm'))
 app.use(bodyParser.urlencoded())
 
 // 主页
-// app.get('/',  (req, res, next) => {
 app.get('/', async (req, res, next) => {
-  let posts = await db.all('SELECT posts.*, username FROM posts JOIN users WHERE posts.userId = users.id')
+  let posts = await db.all('SELECT posts.*, username, avatar FROM posts JOIN users WHERE posts.userId = users.id')
   res.render('index.pug', {posts})
 })
 
 // 帖子详情
 app.get('/post/:postid', async (req, res, next)=> {
-  // debugger
 
   let postid = req.params.postid
   let post = await db.get(
-    'SELECT posts.*, username FROM posts JOIN users ON posts.userId = users.id WHERE posts.id = ?'
+    'SELECT posts.*, username, avatar FROM posts JOIN users ON posts.userId = users.id WHERE posts.id = ?'
     , postid)
 
   if (post) {
     let comments = await db.all(
-      `SELECT username, com.* FROM users join 
+      `SELECT username, avatar, com.* FROM users join 
       (SELECT c.userId, c.content, c.timestamp FROM posts JOIN comments c ON posts.id = c.postId WHERE posts.id = ? ) com 
       where userId = id`
       , postid)
@@ -94,9 +95,11 @@ app.get('/user/:userid', async (req, res, next) => {
 // 注册
 app.route('/register')
   .get((req, res, next) => {
-    res.sendfile(path.join(__dirname, './static/register.html'))
+    res.render('register.pug')
+    // res.sendfile(path.join(__dirname, './static/register.html'))
   })
-  .post( async (req, res, next) => {
+  .post(upload.single('avatar'), async (req, res, next) => {
+    console.log(req.file)
     console.log(req.body)
 
     let isExistUser = await db.get( 
@@ -106,8 +109,8 @@ app.route('/register')
       res.status(406).send('该用户已被注册')
     } else {
       await db.run(
-        'INSERT INTO users (username, password, timestamp) VALUES (?, ?, ?)',
-        req.body.username, req.body.password, Date.now())
+        'INSERT INTO users (username, password, timestamp, avatar) VALUES (?, ?, ?, ?)',
+        req.body.username, req.body.password, Date.now(), req.file.filename)
 
       res.redirect('/login')
     }
@@ -135,7 +138,7 @@ app.route('/login')
     }
   })
 
-//登出
+// 登出
 app.get('/logout', (req, res, next) => {
   res.clearCookie('userId')
   res.redirect('/')

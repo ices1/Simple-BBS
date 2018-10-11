@@ -7,4 +7,5 @@ block content
                 a( href='/post/' + post.id)= post.title
             span 发帖人：
                 a(href="/user/" + post.userId)= post.username
+                img(width=30 height=30 src='/avatars/' + post.avatar alt=post.username)
                 
