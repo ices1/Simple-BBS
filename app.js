@@ -135,6 +135,12 @@ app.route('/login')
     }
   })
 
+//登出
+app.get('/logout', (req, res, next) => {
+  res.clearCookie('userId')
+  res.redirect('/')
+})
+
 
 // 发送 post 帖子
 app.route('/add-post')
