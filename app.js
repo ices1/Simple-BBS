@@ -2,8 +2,10 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
+const sqlite = require('sqlite')
+const dbPromise = sqlite.open('./bbs.db', { Promise });
+let db
 const port = 3002
-
 const app = express()
 
 // 保存数据
@@ -72,7 +74,7 @@ const comments = [{
 // 美化 html 源代码
 app.locals.pretty = true 
 // 设置默认模板文件
-// app.set('views', './templates')
+// app.set('views', './views')
 
 
 // 默认打开 static 下的 index.html
@@ -80,7 +82,10 @@ app.locals.pretty = true
 app.use('/static', express.static('./static'))
 app.use(bodyParser.urlencoded())
 
-app.get('/', (req, res, next) => {
+// 主页
+app.get('/',  (req, res, next) => {
+// app.get('/', async (req, res, next) => {
+  // let posts = await db.all('SELECT * FROM posts')
   res.render('index.pug', {posts})
 })
 
@@ -110,9 +115,8 @@ app.post('/add-comment', (req, res, next) => {
   res.redirect('/post/' + req.body.postid)
 })
 
-app.listen(port, () => {
-  console.log('server is listening on port', port)
-})
+
+
 
 // 个人主页
 app.get('/user/:userid', (req, res, next) => {
@@ -145,12 +149,25 @@ app.route('/register')
     }
   })
 
-  // 登录
-  app.route('/login')
-    .get((req, res, next) => {
-      res.render('login.pug')
-    })
-    .post((req, res, next) => {
-      res.redirect('/')
-    })
+// 登录
+app.route('/login')
+  .get((req, res, next) => {
+    res.render('login.pug')
+  })
+  .post((req, res, next) => {
+    res.redirect('/')
+  })
 
+// 启动监听，读取数据库
+// ;(async function() {
+  // db = await dbPromise
+  app.listen(port, () => {
+    console.log('server is listening on port', port)
+  })
+// }())
+// ;(async function() {
+//   db = await dbPromise
+//   app.listen(port, () => {
+//     console.log('server is listening on port', port)
+//   })
+// }())
