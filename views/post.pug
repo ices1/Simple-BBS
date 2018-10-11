@@ -6,17 +6,22 @@ block content
         p  
             span= post.timestamp
             span 发帖人：
-                a(href='/user/' + post.userid)= post.userid
+                a(href='/user/' + post.userId)= post.username
         p= post.content
 
     hr
-    ul
-        each c in comment
-            li
-                div
-                    span 回帖人： #{c.userid}
-                    p 回帖内容： #{c.content}
-                    span 回帖时间： #{c.timestamp}
+    if comments.length
+        ul
+            each comment in comments
+                li
+                    div
+                        span 回帖人： #{comment.username}
+                        p 回帖内容： #{comment.content}
+                        span 回帖时间： #{comment.timestamp}
+    else
+        div.no-comments 还没有人评论
+        br
+
     div
         form(action='/add-comment' method='post')
             input(hidden=true name='postid' value=post.id)

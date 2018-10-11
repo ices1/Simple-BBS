@@ -1,10 +1,33 @@
 extends layout.pug
 
 block content
-    div
-        p=user.name
-    h2 他发过的帖子
-    div
-        ul
-            each post in posts
-                a(href="/post/" + post.id)=post.content
+    if user
+        div
+            p=user.username
+        h3 他发过的帖子
+        div
+            ul
+                each post in posts
+                    li
+                        p 内容：
+                            a(href="/post/" + post.id)= post.content
+                            span 时间：
+                            span= post.timestamp
+
+        if comments
+            div
+                h3 他的评论动态
+                div
+                    ul
+                        each comment in comments
+                            li
+                                a(href="/post/" + comment.postId)
+                                    h4=  comment.postTitle
+                                    span= comment.content
+                                span 时间：
+                                span= comment.timestamp
+        else
+            div.no-comments 没有发送过动态哦~
+
+    else
+        div 该用户不存在

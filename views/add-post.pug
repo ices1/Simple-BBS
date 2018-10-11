@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content
+    div
+        form(action='/add-post' method='post')
+            input(name='title'  placeholder='请输入标题')
+            textarea(name="content"  placeholder='请输入内容')
+            br
+            button 提交

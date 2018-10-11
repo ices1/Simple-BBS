@@ -5,4 +5,6 @@ block content
         li
             h3
                 a( href='/post/' + post.id)= post.title
-            span 发帖人id： #{post.userid}
+            span 发帖人：
+                a(href="/user/" + post.userId)= post.username
+                
