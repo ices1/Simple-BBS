@@ -5,12 +5,13 @@ const bodyParser = require('body-parser')
 const sqlite = require('sqlite')
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
-// const svgCaptcha = require('svg-captcha');
+const svgCaptcha = require('svg-captcha');
 const dbPromise = sqlite.open('./bbs.db', { Promise });
 const upload = multer({dest: path.join(__dirname, 'user-uploaded')})
 const port = 3002
 const app = express()
 let db
+let sessions = {}
 
 // 美化 html 源代码
 app.locals.pretty = true 
@@ -24,11 +25,13 @@ app.use('/avatars', express.static('./user-uploaded'))
 app.use(cookieParser('sdfghyhbvbnm'))
 app.use(bodyParser.urlencoded())
 
-// app.use( function sessionMiddleware(req, res, next) {
-//   if (!req.cookie.sessionIn) {
-//     res.cookie.sessionIn = Math.random().toString(32).slice(2)
-//   }
-// })
+app.use( function sessionMiddleware(req, res, next) {
+  // console.log(req.cookies)
+  if (!req.cookies.sessionId) {
+    res.cookie('sessionId', Math.random().toString(32).slice(2))
+  }
+  next()
+})
 
 app.use( async (req, res, next) => {
   req.user = await db.get('SELECT * FROM users WHERE id = ?', req.signedCookies.userId)
@@ -137,24 +140,43 @@ app.route('/login')
     res.render('login.pug', {user: req.user})
   })
   .post( async (req, res, next) => {
-    // 验证码
-    // let captcha = svgCaptcha.create();
-    // console.log(captcha);
+    // 返回登录数据
+    console.log(req.body)
 
-    let user = await db.get( 
-      'SELECT * FROM users WHERE username = ? and password = ?', req.body.username, req.body.password)
+    if (sessions[req.cookies.sessionId] == req.body.captcha.toLowerCase()) {
+      let user = await db.get(
+        'SELECT * FROM users WHERE username = ? and password = ?', req.body.username, req.body.password)
+      if (user) {
+        // console.log('登录成功')
+        res.cookie('userId', user.id, {
+          signed: true,
+        })
+        res.redirect('/')
+      } else {
+        // console.log('登录失败')
+        res.status(404).send('username or password was wrong')
+      }
 
-    if (user) {
-      // console.log('登录成功')
-      res.cookie('userId', user.id, {
-        signed: true,
-      })
-      res.redirect('/')
     } else {
-      // console.log('登录失败')
-      res.status(404).send('username or password was wrong')
+      res.status(404).send('captcha was wrong')
     }
   })
+
+// 验证码
+app.get('/captcha', (req, res, next) => {
+  let captcha = svgCaptcha.create({
+    color: true,
+    noise: 2,
+    ignoreChars: '0o1i',
+    // background: '#cc9966'
+  });
+  sessions[req.cookies.sessionId] = captcha.text.toLowerCase()
+  console.log('更新写入验证码：', sessions[req.cookies.sessionId])
+
+  res.type('svg'); 
+  res.status(200).send(captcha.data);
+  next()
+})
 
 // 登出
 app.get('/logout', (req, res, next) => {
