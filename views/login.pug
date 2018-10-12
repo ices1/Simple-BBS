@@ -3,6 +3,10 @@ extends layout.pug
 block content
     div
         form(action="/login", method='POST')
+            |用户名：
             input(type="text" name='username')
+            |密码：
             input(type="password" name='password')
+            |验证码：
+            input(type="text" name='captcha')
             button 提交

@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const sqlite = require('sqlite')
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
+// const svgCaptcha = require('svg-captcha');
 const dbPromise = sqlite.open('./bbs.db', { Promise });
 const upload = multer({dest: path.join(__dirname, 'user-uploaded')})
 const port = 3002
@@ -23,6 +24,11 @@ app.use('/avatars', express.static('./user-uploaded'))
 app.use(cookieParser('sdfghyhbvbnm'))
 app.use(bodyParser.urlencoded())
 
+// app.use( function sessionMiddleware(req, res, next) {
+//   if (!req.cookie.sessionIn) {
+//     res.cookie.sessionIn = Math.random().toString(32).slice(2)
+//   }
+// })
 
 app.use( async (req, res, next) => {
   req.user = await db.get('SELECT * FROM users WHERE id = ?', req.signedCookies.userId)
@@ -131,6 +137,9 @@ app.route('/login')
     res.render('login.pug', {user: req.user})
   })
   .post( async (req, res, next) => {
+    // 验证码
+    // let captcha = svgCaptcha.create();
+    // console.log(captcha);
 
     let user = await db.get( 
       'SELECT * FROM users WHERE username = ? and password = ?', req.body.username, req.body.password)
