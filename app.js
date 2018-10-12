@@ -178,14 +178,28 @@ app.route('/add-post')
 
   // 删除帖子
   app.get('/delete-post/:postid', async (req, res, next) => {
-    await db.run('DELETE FROM posts WHERE id = ?', req.params.postid)
-    res.redirect('/')
+    let postId = req.params.postid
+    let post = await db.get('SELECT * FROM posts WHERE id = ?', postId)
+
+    if (req.user.id == post.userId) {
+      await db.run('DELETE FROM posts WHERE id = ?', postId)
+      res.redirect('/')
+    } else {
+      res.send('You do not have permission to delete this post')
+    }
   })
 
   // 删除评论
   app.get('/delete-comment/:commentid', async (req, res, next) => {
-    await db.run('DELETE FROM comments WHERE id = ?', req.params.commentid)
-    res.redirect(req.headers.referer)
+    let commentId = req.params.commentid
+    let comment = await db.get('SELECT * FROM comments WHERE id = ?', commentId)
+
+    if (req.user.id == comment.userId) {
+      await db.run('DELETE FROM comments WHERE id = ?', commentId)
+      res.redirect('/post/' + comment.postId)
+    } else {
+      res.send('You do not have permission to delete this comment')
+    }
   })
 
 // 启动监听，读取数据库
