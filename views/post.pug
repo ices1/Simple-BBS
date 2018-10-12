@@ -8,6 +8,8 @@ block content
             span 发帖人：
                 a(href='/user/' + post.userId)= post.username
                 img(width=30 height=30 src='/avatars/' + post.avatar alt=post.username)
+                if (user.id == post.userId)
+                    a(href="/delete-post/" + post.id).delete 删除
         p= post.content
 
     hr
@@ -17,6 +19,10 @@ block content
                 li
                     div
                         span 回帖人： #{comment.username}
+                        
+                        if (user.id == comment.userId)
+                            a(href="/delete-comment/" + comment.id).delete 删除
+                        
                         img(width=30 height=30 src='/avatars/' + comment.avatar alt=comment.username)
                         p 回帖内容： #{comment.content}
                         span 回帖时间： #{comment.timestamp}

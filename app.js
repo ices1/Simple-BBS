@@ -23,10 +23,17 @@ app.use('/avatars', express.static('./user-uploaded'))
 app.use(cookieParser('sdfghyhbvbnm'))
 app.use(bodyParser.urlencoded())
 
+
+app.use( async (req, res, next) => {
+  req.user = await db.get('SELECT * FROM users WHERE id = ?', req.signedCookies.userId)
+  // console.log(req.user)
+  next()
+})
+
 // 主页
 app.get('/', async (req, res, next) => {
   let posts = await db.all('SELECT posts.*, username, avatar FROM posts JOIN users WHERE posts.userId = users.id')
-  res.render('index.pug', {posts})
+  res.render('index.pug', {posts, user: req.user})
 })
 
 // 帖子详情
@@ -40,11 +47,12 @@ app.get('/post/:postid', async (req, res, next)=> {
   if (post) {
     let comments = await db.all(
       `SELECT username, avatar, com.* FROM users join 
-      (SELECT c.userId, c.content, c.timestamp FROM posts JOIN comments c ON posts.id = c.postId WHERE posts.id = ? ) com 
-      where userId = id`
+      (SELECT c.* FROM posts JOIN comments c ON posts.id = c.postId WHERE posts.id = ? ) com 
+      where userId = users.id`
       , postid)
 
-    res.render('post.pug',{post,comments})
+    // console.log('post: ',post,'comments: ', comments)
+    res.render('post.pug',{post,comments, user: req.user})
   } else {
     res.status(404).render('page-404.pug')
   }
@@ -88,14 +96,15 @@ app.get('/user/:userid', async (req, res, next) => {
   res.render('user.pug', {
      user,
      posts,
-     comments
+     comments,
+     user: req.user
     })
 })
 
 // 注册
 app.route('/register')
   .get((req, res, next) => {
-    res.render('register.pug')
+    res.render('register.pug', {user: req.user})
     // res.sendfile(path.join(__dirname, './static/register.html'))
   })
   .post(upload.single('avatar'), async (req, res, next) => {
@@ -119,7 +128,7 @@ app.route('/register')
 // 登录
 app.route('/login')
   .get((req, res, next) => {
-    res.render('login.pug')
+    res.render('login.pug', {user: req.user})
   })
   .post( async (req, res, next) => {
 
@@ -148,11 +157,11 @@ app.get('/logout', (req, res, next) => {
 // 发送 post 帖子
 app.route('/add-post')
   .get((req, res, next) => {
-    res.render('add-post.pug')
+    res.render('add-post.pug', {user: req.user})
   })
   .post( async (req, res, next) => {
     // 判断登录状态
-    console.log(req.signedCookies)
+    // console.log(req.signedCookies)
     let userId = req.signedCookies.userId
 
     if (userId) {
@@ -165,6 +174,12 @@ app.route('/add-post')
     } else {
       res.send('you are not logged in!')
     }
+  })
+  app.get('/delete-post', (res, req, next) => {
+  
+  })
+  app.get('/delete-comment', (res, req, next) => {
+
   })
 
 // 启动监听，读取数据库
