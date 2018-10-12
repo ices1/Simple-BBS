@@ -7,8 +7,8 @@ block content
             span= post.timestamp
             span 发帖人：
                 a(href='/user/' + post.userId)= post.username
-                img(width=30 height=30 src='/avatars/' + post.avatar alt=post.username)
-                if (user.id == post.userId)
+                img(width=30 height=30 src='/avatars/' + post.avatar alt=post.username).avatar-mid
+                if (user && (user.id == post.userId))
                     a(href="/delete-post/" + post.id).delete 删除
         p= post.content
 
@@ -18,12 +18,13 @@ block content
             each comment in comments
                 li
                     div
-                        span 回帖人： #{comment.username}
-                        
-                        if (user.id == comment.userId)
+                        span 回帖人： 
+                        a(href="/user/" + comment.userId)
+                            span= comment.username
+                            img(width=30 height=30 src='/avatars/' + comment.avatar alt=comment.username).avatar-mid
+                            
+                        if (user && (user.id == comment.userId))
                             a(href="/delete-comment/" + comment.id).delete 删除
-                        
-                        img(width=30 height=30 src='/avatars/' + comment.avatar alt=comment.username)
                         p 回帖内容： #{comment.content}
                         span 回帖时间： #{comment.timestamp}
     else

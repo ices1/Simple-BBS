@@ -63,7 +63,7 @@ app.get('/post/:postid', async (req, res, next)=> {
     // console.log('post: ',post,'comments: ', comments)
     res.render('post.pug',{post,comments, user: req.user})
   } else {
-    res.status(404).render('page-404.pug')
+    res.render('page-404.pug', {data :'你来到了知识的荒地 '})
   }
 })
 
@@ -78,7 +78,7 @@ app.post('/add-comment', async (req, res, next) => {
 
     res.redirect('/post/' + req.body.postid)
   } else {
-    res.send('you are not logged in, cant not allow commit!')
+    res.render('page-404.pug', {data :'先登录后才可以发评论哦，快来试试吧 ^_^ '})
   }
 })
 
@@ -90,7 +90,7 @@ app.get('/user/:userid', async (req, res, next) => {
   let posts = await db.all(
     'SELECT u.username, p.* from users u join posts p on u.id = p.userId where u.id = ?'
     , userid)  
-  let user = await db.get(
+  let userinfo = await db.get(
     'SELECT users.id, users.username FROM users where id = ?'
     , userid
   )
@@ -103,7 +103,7 @@ app.get('/user/:userid', async (req, res, next) => {
   )
     
   res.render('user.pug', {
-     user,
+     userinfo,
      posts,
      comments,
      user: req.user
@@ -124,7 +124,7 @@ app.route('/register')
       'SELECT * FROM users WHERE username = ?', req.body.username )
 
     if (isExistUser) {
-      res.status(406).send('该用户已被注册')
+      res.render('page-404.pug', {data :'这个名字已经被注册咯，换个试试吧 &_& '})
     } else {
       await db.run(
         'INSERT INTO users (username, password, timestamp, avatar) VALUES (?, ?, ?, ?)',
@@ -154,11 +154,11 @@ app.route('/login')
         res.redirect('/')
       } else {
         // console.log('登录失败')
-        res.status(404).send('username or password was wrong')
+        res.render('page-404.pug', {data :'登入名、密码错啦, 再蒙一下 ~_~ '})
       }
-
+      
     } else {
-      res.status(404).send('captcha was wrong')
+      res.render('page-404.pug', {data :'验证码又输错啦, 一定是姿势不对 #_# '})
     }
   })
 
@@ -203,7 +203,7 @@ app.route('/add-post')
 
       res.redirect('/post/' + postid.id)
     } else {
-      res.send('you are not logged in!')
+      res.render('page-404.pug', {data :'请先登录后再发帖，谢谢 ^_^ '})
     }
   })
 
@@ -216,7 +216,7 @@ app.route('/add-post')
       await db.run('DELETE FROM posts WHERE id = ?', postId)
       res.redirect('/')
     } else {
-      res.send('You do not have permission to delete this post')
+      res.render('page-404.pug', {data :'您不能删除别人的帖子哦，发个帖子试试吧 ^_^ '})
     }
   })
 
@@ -229,8 +229,13 @@ app.route('/add-post')
       await db.run('DELETE FROM comments WHERE id = ?', commentId)
       res.redirect('/post/' + comment.postId)
     } else {
-      res.send('You do not have permission to delete this comment')
+      res.render('page-404.pug', {data :'您不能删除别人的评论哦，发个评论试试吧 ^_^ '})
     }
+  })
+
+  // 404 page
+  app.get('/page-404', (req, res, next) => {
+    res.render('page-404.pug', {data :'你来到了知识的荒地 '})
   })
 
 // 启动监听，读取数据库
