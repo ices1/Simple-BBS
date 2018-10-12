@@ -175,11 +175,17 @@ app.route('/add-post')
       res.send('you are not logged in!')
     }
   })
-  app.get('/delete-post', (res, req, next) => {
-  
-  })
-  app.get('/delete-comment', (res, req, next) => {
 
+  // 删除帖子
+  app.get('/delete-post/:postid', async (req, res, next) => {
+    await db.run('DELETE FROM posts WHERE id = ?', req.params.postid)
+    res.redirect('/')
+  })
+
+  // 删除评论
+  app.get('/delete-comment/:commentid', async (req, res, next) => {
+    await db.run('DELETE FROM comments WHERE id = ?', req.params.commentid)
+    res.redirect(req.headers.referer)
   })
 
 // 启动监听，读取数据库
