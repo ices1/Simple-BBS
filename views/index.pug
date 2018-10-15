@@ -2,11 +2,13 @@ extends layout.pug
 
 block content
     each post in posts
-        li
-            h3
-                a( href='/post/' + post.id)= post.title
-            span 发帖人：
+        li(class='text-secondary list-group-item mb-3')
+            a( href='/post/' + post.id)
+                h3= post.title
+            span.ellipsis= post.content
+            span 作者：
                 a(href="/user/" + post.userId)
                     span= post.username
                     img(width=30 height=30 src='/avatars/' + post.avatar alt=post.username).avatar-mid
+            span(class='index-time float-right ')= post.timestamp
                 

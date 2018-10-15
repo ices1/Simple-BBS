@@ -3,33 +3,39 @@ html
     head
         title Simple BBS
         link(rel='stylesheet' href='/static/css/common.css')
+        //- script(src='/static/js/main.js')
         meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
         link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous")
-        //- script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
-        //- script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous")
-        //- script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous")
+        script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous")
+        script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous")
 body
-    div
-        a(href="/") 首页 
-        |
-        if (user)
-            | 
-            a(href="/user/" + user.id)
-                |
-                span.user-name= user.username
-                |
-                img(src='/avatars/' + user.avatar alt=user.username).avatar
-                |
-            a(href="/add-post") 发布 
+    div(class='d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm')
+        h5(class="my-0 mr-md-auto font-weight-normal") Blog
+        nav(class='my-2 my-md-0 mr-md-3')
+            a(href="/" class='p-2 text-dark') 首页
             |
-            a(href="/logout") 退出 
-        else
-            |
-            a(href="/login") 登录 
-            |
-            a(href="/register") 注册 
-    
-    block content
+            if (user)
+                a(href="/add-post" class='p-2 text-dark') 发布 
+                |
+                a(href="/logout" class='p-2 text-dark') 退出 
+                | 
+                a(href="/user/" + user.id)
+                    |
+                    //- span.user-name= user.username
+                    span(class='p-2 text-cyan user-name')= user.username
+                    |
+                    img(src='/avatars/' + user.avatar alt=user.username  class='p-2 text-dark').avatar
+                    |
+            else
+                |
+                a(href="/login" class='p-2 text-dark') 登录 
+                |
+                a(href="/register" class='p-2 text-dark') 注册 
+    .container
+        block content
 
-    footer
+    footer(class='sticky-bottom border-top my-3 pt-3  text-center text-small')
         p copyright
+
+script(src='/static/js/main.js')

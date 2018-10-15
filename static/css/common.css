@@ -29,11 +29,12 @@ a {
     transition: .5s ease-in-out;
 }
 .user-name {
-    position: absolute;
+    /* position: absolute;
     right: 0;
     top: 0;
     margin-right: 1rem;
-    margin-top: 4rem;
+    margin-top: 4rem; */
+    margin-right: 2rem
 }
 /* .delete {
     color: #ff5722;
@@ -41,3 +42,39 @@ a {
 .delete:hover {
     text-decoration: underline;
 }
+.captcha {
+    margin-top: -1rem 
+}
+.hinde-btn {
+    display: none;
+}
+.index-time{
+    display: none
+}
+.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;    
+    display: inline-block;
+    width: 100%;
+}
+html {
+    font-size: 14px;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 16px;
+    }
+  }
+  
+  .container {
+    max-width: 960px;
+  }
+  
+  .pricing-header {
+    max-width: 700px;
+  }
+  
+  .card-deck .card {
+    min-width: 220px;
+  }
