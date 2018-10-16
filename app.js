@@ -128,7 +128,7 @@ app.route('/register')
       res.render('page-404.pug', {data :'这个名字已经被注册咯，换个试试吧 &_& '})
     } else {
       await db.run(
-        'INSERT INTO users (username, password, timestamp, avatar, email) VALUES (?, ?, ?, ?)',
+        'INSERT INTO users (username, password, timestamp, avatar, email) VALUES (?, ?, ?, ?, ?)',
         req.body.username, req.body.password, Date.now(), req.file.filename, req.body.email)
 
       res.redirect('/login')
