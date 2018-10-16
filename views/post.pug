@@ -2,31 +2,30 @@ extends layout.pug
 
 block content
     div
-        h1= post.title
+        h3= post.title
         p  
-            span= post.timestamp
-            span 发帖人：
-                a(href='/user/' + post.userId)= post.username
+            span.text-secondary 发帖人：
                 img(width=30 height=30 src='/avatars/' + post.avatar alt=post.username).avatar-mid
+                a(href='/user/' + post.userId).ml-2= post.username
                 if (user && (user.id == post.userId))
-                    a(href="/delete-post/" + post.id).delete 删除
+                    a(href="/delete-post/" + post.id class='delete ml-5') 删除
+            span(class='post-time float-right text-secondary mt-2')= post.timestamp
         p= post.content
 
-    hr
+    h5(class='text-secondary py-3') Comments：
+
     if comments.length
-        ul
+        ul(class='list-group list-group-flush')
             each comment in comments
-                li
+                li.list-group-item
                     div
-                        span 回帖人： 
                         a(href="/user/" + comment.userId)
-                            span= comment.username
-                            img(width=30 height=30 src='/avatars/' + comment.avatar alt=comment.username).avatar-mid
-                            
+                            img(width=30 height=30 src='/avatars/' + comment.avatar alt=comment.username class='avatar-mid')
+                            span.ml-2= comment.username
+                        span(class='float-right text-secondary post-time mt-2')= comment.timestamp
+                        p 回帖： #{comment.content}
                         if (user && (user.id == comment.userId))
                             a(href="/delete-comment/" + comment.id).delete 删除
-                        p 回帖内容： #{comment.content}
-                        span 回帖时间： #{comment.timestamp}
     else
         div.no-comments 还没有人评论
         br
@@ -34,6 +33,5 @@ block content
     div
         form(action='/add-comment' method='post')
             input(hidden=true name='postid' value=post.id)
-            textarea(name="content", placeholder='请输入评论')
-            br
-            button 提交
+            textarea(name="content", placeholder='请输入评论' class="form-control"  aria-label="With textarea")
+            button(class="btn btn-primary float-right mt-2") 发布评论

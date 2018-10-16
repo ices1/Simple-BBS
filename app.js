@@ -91,7 +91,7 @@ app.get('/user/:userid', async (req, res, next) => {
     'SELECT u.username, p.* from users u join posts p on u.id = p.userId where u.id = ?'
     , userid)  
   let userinfo = await db.get(
-    'SELECT users.id, users.username FROM users where id = ?'
+    'SELECT users.id, users.username,users.avatar FROM users where id = ?'
     , userid
   )
   let comments = await db.all(

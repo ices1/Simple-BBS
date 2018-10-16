@@ -2,30 +2,39 @@ extends layout.pug
 
 block content
     if userinfo
+        div(class="sticky-top row bg-primary text-white py-2")
+            div(class='col-3 col-md-2')
+                img(src='/avatars/' + userinfo.avatar class='avatar-userinfo avatar-mid')
+            div(class='col-8 text-left p-2')
+                h4=userinfo.username
+                span.mr-5 发帖数： #{posts.length}
+                span 回帖数： #{comments.length}
+
+        h4(class='text-muted mt-4') 他发过的帖子
         div
-            p=userinfo.username
-        h3 他发过的帖子
-        div
-            ul
+            ul(class='list-group list-group-flush')
                 each post in posts
-                    li
-                        p 内容：
-                            a(href="/post/" + post.id)= post.content
-                            span 时间：
-                            span= post.timestamp
+                    li.list-group-item
+                        //- p 内容：
+                        a(href="/post/" + post.id).text-dark
+                            h4.ellipsis= post.title
+                            span.ellipsis= post.content
+                        //- span 时间：
+                        span(class='index-time float-right  text-secondary')= post.timestamp
 
         if comments
             div
-                h3 他的评论动态
+                h4.text-muted 他的评论动态
                 div
-                    ul
+                    ul(class='list-group list-group-flush')
                         each comment in comments
-                            li
-                                a(href="/post/" + comment.postId)
-                                    h4=  comment.postTitle
-                                    span= comment.content
-                                span 时间：
-                                span= comment.timestamp
+                            li(class='list-group-item row')
+                                div(class='col-8 float-left')
+                                    a(href="/post/" + comment.postId class='text-body')
+                                        h4.ellipsis=  comment.postTitle
+                                        span.ellipsis= comment.content
+                                    //- span 时间：
+                                span(class='index-time float-right col-3 text-right text-secondary')= comment.timestamp
         else
             div.no-comments 没有发送过动态哦~
 

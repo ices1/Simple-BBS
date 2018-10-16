@@ -3,7 +3,9 @@ extends layout.pug
 block content
     div
         form(action='/add-post' method='post')
-            input(name='title'  placeholder='请输入标题')
-            textarea(name="content"  placeholder='请输入内容')
+            label.mt-4 标题:
+            input(type="text" name='title'  placeholder='请输入标题').form-control
+            label.mt-4 内容:
+            textarea(name="content", placeholder='请输入帖子内容' class="form-control"  aria-label="With textarea")
             br
-            button 提交
+            button(class="btn btn-primary btn-lg btn-block mt-5") 发布
