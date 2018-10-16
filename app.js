@@ -6,6 +6,7 @@ const sqlite = require('sqlite')
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const svgCaptcha = require('svg-captcha');
+const nodemailer = require('nodemailer');
 const dbPromise = sqlite.open('./bbs.db', { Promise });
 const upload = multer({dest: path.join(__dirname, 'user-uploaded')})
 const port = 3002
@@ -127,8 +128,8 @@ app.route('/register')
       res.render('page-404.pug', {data :'这个名字已经被注册咯，换个试试吧 &_& '})
     } else {
       await db.run(
-        'INSERT INTO users (username, password, timestamp, avatar) VALUES (?, ?, ?, ?)',
-        req.body.username, req.body.password, Date.now(), req.file.filename)
+        'INSERT INTO users (username, password, timestamp, avatar, email) VALUES (?, ?, ?, ?)',
+        req.body.username, req.body.password, Date.now(), req.file.filename, req.body.email)
 
       res.redirect('/login')
     }
@@ -237,6 +238,112 @@ app.route('/add-post')
   app.get('/page-404', (req, res, next) => {
     res.render('page-404.pug', {data :'你来到了知识的荒地 '})
   })
+
+  // 忘记密码，发送邮件
+  app.get('/forgot-password', (req, res, next) => {
+    res.render('send-email.pug')
+  })
+  
+  app.route('/send-email')
+    .get((req, res, next) => {
+      res.render('send-email.pug')
+    })
+    .post( async (req, res, next) => {
+      console.log(req.body.username, req.body.email)
+
+      let user = await db.get('SELECT * FROM users WHERE username = ? and email = ?'
+        , req.body.username, req.body.email)
+
+      if (user) {
+        let emailFlag = Math.random().toString(32).slice(2)  + "username=" + encodeURI(user.username)
+        sessions[emailFlag] = emailFlag
+        let transporter = nodemailer.createTransport({
+          host: 'smtp.163.com',
+          service: '163', // 使用了内置传输发送邮件 查看支持列表：https://nodemailer.com/smtp/well-known/
+          port: 465, // SMTP 端口
+          secureConnection: true, // 使用了 SSL
+          auth: {
+            user: 'iceesong@163.com',
+            // 这里密码不是qq密码，是你设置的smtp授权码
+            pass: 'bC3XpmsJ',
+          }
+        });
+        
+        let mailOptions = {
+          from: '"JavaScript之禅" <iceesong@163.com>', // sender address
+          to: user.email, // list of receivers
+          cc: '1299332802@qq.com',
+          subject: '轻论坛 - 修改密码', // Subject line
+          // 发送text或者html格式
+          // text: 'Hello world?', // plain text body
+          html: `<h2>${user.username}, 你好:</h2>
+            <p>你正在 轻论坛 进行更改密码操作,点击以下地址更改密码，请勿将地址泄露</p>
+            <p><a href='http://192.168.31.146:3002/reset-password/${emailFlag}'>http://192.168.31.146:3002/reset-password/${emailFlag}</a></p>`
+        };
+        
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return console.log(error);
+          }
+          console.log('Message sent: %s', info.messageId);
+          // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>
+        });
+        res.render('page-404.pug', {data: '邮件发送成功，记得回邮箱确认信息 @_@'})
+      } else {
+        res.render('page-404.pug', {data: '用户名或邮箱错误'})
+      }
+    })
+  // 重置密码
+  app.route('/reset-password/?:hash')
+    .get((req, res, next) => {
+      res.cookie('emailFlag', req.params.hash, {
+        signed: true
+      })
+      res.cookie('username', req.params.hash.split('username=')[1], {
+        signed: true
+      })
+      res.render('reset-password.pug')
+    })
+    .post( async (req, res, next) => {
+      console.log(req.signedCookies, req.cookies, req.body)
+      let email = encodeURI(req.signedCookies.emailFlag)
+    
+      if (email == sessions[email] && sessions[email] != undefined) {
+        console.log(req.signedCookies.username)
+        let username = req.signedCookies.username
+    
+        await db.run('update users set password = ? where username = ?'
+          , req.body.password, username)
+    
+        console.log('密码成功')
+        res.render('page-404.pug', {data: '密码修改成功，请重新登录页面 ~~'})
+      } else {
+        console.log('密码失败')
+        res.render('page-404.pug', {data: '密码修改失败，请确认用户名是输入否正确 ~~'})
+        res.render('login.pug')
+      }
+    })
+
+// app.post('/reset-password', async (req, res, next) => {
+//   console.log(req.signedCookies, req.cookies, req.body)
+//   let email = encodeURI(req.signedCookies.emailFlag)
+
+//   if (email == sessions[email] && sessions[email] != undefined) {
+//     console.log(req.signedCookies.username)
+//     let username = req.signedCookies.username
+
+//     await db.run('update users set password = ? where username = ?'
+//       , req.body.password, username)
+
+//     console.log('正确')
+//     res.render('page-404.pug', {data: '密码修改成功，请重新登录页面 ~~'})
+//   } else {
+//     console.log('错误')
+//     res.render('login.pug')
+//   }
+
+// })
 
 // 启动监听，读取数据库
 ;(async function() {

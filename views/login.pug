@@ -11,7 +11,8 @@ block content
             label(for="username").mt-4 验证码：
             .container
                 .row
-                    input(type="text" name='captcha' class='col form-control')
+                    input(type="text" name='captcha' class='col form-control mb-3')
                     img(src="/captcha", alt="captcha" class='col col-md-3 captcha')
+            a(href='/forgot-password') 忘记密码
             button(class="btn btn-primary btn-lg btn-block mt-5") 提交
             

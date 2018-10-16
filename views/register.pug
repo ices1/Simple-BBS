@@ -3,14 +3,15 @@ extends layout.pug
 block content
     h3.text-center 注册用户
     div 
-        form(action="/register", method="post" enctype='multipart/form-data')
+        form(action="/register", method="post", enctype='multipart/form-data')
             label(for="username").mt-4 用户名:
             input(type="text" name='username').form-control
             label(for="username").mt-4 密码:
             input(type="password" name='password').form-control
-
+            label(for="email").mt-4 邮箱:
+            input(type="text" name='email' placeholder='可选，忘记密码后可找回').form-control
             label(for="username").mt-5 头像：
             input(type="file" class="hinde-btn"  id="inputGroupFile02")
             label( class='btn btn-secondary ml-3' for="inputGroupFile02") 点击上传头像
 
-            button(type="button" class="btn btn-primary btn-lg btn-block mt-5") 提交
+            button(class="btn btn-primary btn-lg btn-block mt-5") 提交

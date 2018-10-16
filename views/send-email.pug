@@ -1,0 +1,12 @@
+extends layout.pug
+
+block content
+    h3.text-center 发送邮件，重置密码
+    div
+         form(action="/send-email", method='POST')
+            label(for="username").mt-4 用户名:
+            input(type="text" name='username').form-control
+            label(for="email").mt-4 邮箱
+            input(type="text" name='email' placeholder='注册时的邮箱').form-control
+            button(class="btn btn-primary btn-lg btn-block mt-5") 发送邮件
+            
