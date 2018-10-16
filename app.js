@@ -256,7 +256,10 @@ app.route('/add-post')
 
       if (user) {
         let emailFlag = Math.random().toString(32).slice(2)  + "username=" + encodeURI(user.username)
+        let emailLocals = path.join(req.headers.origin, '/reset-password/', emailFlag)
+
         sessions[emailFlag] = emailFlag
+
         let transporter = nodemailer.createTransport({
           host: 'smtp.163.com',
           service: '163', // 使用了内置传输发送邮件 查看支持列表：https://nodemailer.com/smtp/well-known/
@@ -270,15 +273,15 @@ app.route('/add-post')
         });
         
         let mailOptions = {
-          from: '"JavaScript之禅" <iceesong@163.com>', // sender address
+          from: '"轻论坛 " <iceesong@163.com>', // sender address
           to: user.email, // list of receivers
-          cc: '1299332802@qq.com',
+          // cc: '1299332802@qq.com',
           subject: '轻论坛 - 修改密码', // Subject line
           // 发送text或者html格式
           // text: 'Hello world?', // plain text body
           html: `<h2>${user.username}, 你好:</h2>
             <p>你正在 轻论坛 进行更改密码操作,点击以下地址更改密码，请勿将地址泄露</p>
-            <p><a href='http://192.168.31.146:3002/reset-password/${emailFlag}'>http://192.168.31.146:3002/reset-password/${emailFlag}</a></p>`
+            <p><a href='${emailLocals}'>${emailLocals}</a></p>`
         };
         
         // send mail with defined transport object
@@ -324,26 +327,6 @@ app.route('/add-post')
         res.render('login.pug')
       }
     })
-
-// app.post('/reset-password', async (req, res, next) => {
-//   console.log(req.signedCookies, req.cookies, req.body)
-//   let email = encodeURI(req.signedCookies.emailFlag)
-
-//   if (email == sessions[email] && sessions[email] != undefined) {
-//     console.log(req.signedCookies.username)
-//     let username = req.signedCookies.username
-
-//     await db.run('update users set password = ? where username = ?'
-//       , req.body.password, username)
-
-//     console.log('正确')
-//     res.render('page-404.pug', {data: '密码修改成功，请重新登录页面 ~~'})
-//   } else {
-//     console.log('错误')
-//     res.render('login.pug')
-//   }
-
-// })
 
 // 启动监听，读取数据库
 ;(async function() {
