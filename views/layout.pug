@@ -1,7 +1,7 @@
 doctype html
 html
     head
-        title Simple BBS
+        title 轻论坛
         link(rel='stylesheet' href='/static/css/common.css')
         //- script(src='/static/js/main.js')
         meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
@@ -11,21 +11,21 @@ html
         //- script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous")
 body
     div(class='d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm')
-        h5(class="my-0 mr-md-auto font-weight-normal") Blog
+        h5(class="my-0 mr-md-auto font-weight-normal") 轻论坛
         nav(class='my-2 my-md-0 mr-md-3')
             a(href="/" class='p-2 text-dark') 首页
             |
             if (user)
                 a(href="/add-post" class='p-2 text-dark') 发布 
                 |
-                a(href="/logout" class='p-2 text-dark') 退出 
+                a(href="/logout" class='p-2 text-dark') 退出
                 | 
                 a(href="/user/" + user.id)
                     |
                     //- span.user-name= user.username
-                    span(class='p-2 text-cyan user-name')= user.username
+                    span(class='p-2 text-cyan user-name mr-5')  #{user.username} (已登录)
                     |
-                    img(src='/avatars/' + user.avatar alt=user.username  class='p-2 text-dark').avatar
+                    img(src='/avatars/' + user.avatar alt=user.username).avatar
                     |
             else
                 |
