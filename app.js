@@ -9,7 +9,10 @@ const svgCaptcha = require('svg-captcha');
 const nodemailer = require('nodemailer');
 const dbPromise = sqlite.open('./bbs.db', { Promise });
 const upload = multer({dest: path.join(__dirname, 'user-uploaded')})
-const port = 3002
+const port1 = 1003
+const port2 = 1004
+const https = https
+const fs = require('fs')
 const app = express()
 let db
 let sessions = {}
@@ -328,10 +331,23 @@ app.route('/add-post')
       }
     })
 
+
+// add https
+
+// credentials 
+const credentials = {
+    key: fs.readFileSync('/root/.acme.sh/words.iceeweb.com/words.iceeweb.com.key'),
+    cert: fs.readFileSync('/root/.acme.sh/words.iceeweb.com/words.iceeweb.com.cer')
+};
+
+const httpsServer = https.createServer(credentials, app)
 // 启动监听，读取数据库
 ;(async function() {
   db = await dbPromise
-  app.listen(port, () => {
-    console.log('server is listening on port', port)
+  httpsServer.listen(port2, () => {
+    console.log('httpsServer is listening on port', port2)
+  })
+  app.listen(port1, () => {
+    console.log('httpServer is listening on port', port1)
   })
 }())
