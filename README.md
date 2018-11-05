@@ -2,16 +2,7 @@
 
 ### Demo [https://bbs.iceeweb.com/](https://bbs.iceeweb.com/)
 
- - Home
-![Home](https://raw.githubusercontent.com/ices1/Simple-BBS/master/imgForReadme/1.png)
- - Post
-![Post](https://raw.githubusercontent.com/ices1/Simple-BBS/master/imgForReadme/2.png)
- - UserInfo
-![UserInfo](https://raw.githubusercontent.com/ices1/Simple-BBS/master/imgForReadme/3.png)
- - Login
-![Login](https://raw.githubusercontent.com/ices1/Simple-BBS/master/imgForReadme/4.png)
- - SendEmail
-![SendEmail](https://raw.githubusercontent.com/ices1/Simple-BBS/master/imgForReadme/5.png)
+![Home](https://raw.githubusercontent.com/ices1/Simple-BBS/master/imgForReadme/bbs.png)
 
 ### Install 
 ```javascript
